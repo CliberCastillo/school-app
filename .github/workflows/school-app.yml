@@ -14,10 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Execute SonarQube
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarQube Scan
+      uses: kitabisa/sonarqube-action@master
+      with:
+        host: ${{ secrets.SONARQUBE_HOST }}
+        login: ${{ secrets.SONARQUBE_TOKEN }}
 
     - name: Build the Docker image
       uses: docker/build-push-action@v2
