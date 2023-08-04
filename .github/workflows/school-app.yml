@@ -52,5 +52,8 @@ jobs:
     - name: kubectl
       run: kubectl get pods -A
     
-    - name: Nodes
-      run: kubectl get nodes
+    - name: Deploy
+      run: kubectl apply -f kubernetes/school-app.yml && kubectl apply -f kubernetes/school-app-service.yml
+
+    - name: kubectl
+      run: kubectl get pods -A
