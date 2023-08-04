@@ -35,6 +35,7 @@ namespace SchoolWeb.Controllers
 
         public IActionResult Blog()
         {
+            //comentario
             return View();
         }
 
