@@ -14,11 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: SonarQube Scan
-      uses: kitabisa/sonarqube-action@master
-      with:
-        host: ${{ secrets.SONARQUBE_HOST }}
-        login: ${{ secrets.SONARQUBE_TOKEN }}
+    #- name: SonarQube Scan
+    #  uses: kitabisa/sonarqube-action@master
+    #  with:
+    #    host: ${{ secrets.SONARQUBE_HOST }}
+    #    login: ${{ secrets.SONARQUBE_TOKEN }}
 
     - name: Build the Docker image
       uses: docker/build-push-action@v2
@@ -39,3 +39,18 @@ jobs:
   
     - name: Push the Docker image to Docker Hub
       run: docker push clibercastillo/school-app:${{ github.run_number }}
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: start minikube
+      id: minikube
+      uses: medyagh/setup-minikube@latest
+
+    - name: kubectl
+      run: kubectl get pods -A
+    
+    - name: Nodes
+      run: kubectl get nodes
