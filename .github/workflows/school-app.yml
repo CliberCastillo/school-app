@@ -45,12 +45,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - uses: actions/checkout@v3
+
+    - name: ls
+      run: ls -la
+
     - name: start minikube
       id: minikube
       uses: medyagh/setup-minikube@latest
 
     - name: kubectl
       run: kubectl get pods -A
+    
     
     - name: Deploy
       run: kubectl apply -f kubernetes/school-app.yml && kubectl apply -f kubernetes/school-app-service.yml
