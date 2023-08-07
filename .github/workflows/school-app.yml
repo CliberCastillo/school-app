@@ -14,52 +14,24 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    #- name: SonarQube Scan
-    #  uses: kitabisa/sonarqube-action@master
-    #  with:
-    #    host: ${{ secrets.SONARQUBE_HOST }}
-    #    login: ${{ secrets.SONARQUBE_TOKEN }}
-
     - name: Build the Docker image
       uses: docker/build-push-action@v2
       with:
         context: .
         file: Dockerfile
         push: false
-        tags: clibercastillo/school-app:${{ github.run_number }}
+        tags: ${{ secrets.ECR_REGISTRY }}/school-app:${{ github.run_number }}
         
     - name: List Docker images
       run: docker image ls
     
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
+    - name: Login to AWS ECR
+      uses: aws-actions/amazon-ecr-login@v1
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-  
-    - name: Push the Docker image to Docker Hub
-      run: docker push clibercastillo/school-app:${{ github.run_number }}
-  
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-
-    - uses: actions/checkout@v3
-
-    - name: ls
-      run: ls -la
-
-    - name: start minikube
-      id: minikube
-      uses: medyagh/setup-minikube@latest
-
-    - name: kubectl
-      run: kubectl get pods -A
+        registry: ${{ secrets.ECR_REGISTRY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     
-    
-    - name: Deploy
-      run: kubectl apply -f kubernetes/school-app.yml && kubectl apply -f kubernetes/school-app-service.yml
-
-    - name: kubectl
-      run: kubectl get pods -A
+    - name: Push Docker image to ECR
+      run: docker push ${{ secrets.ECR_REGISTRY }}/school-app:${{ github.run_number }}
+  
