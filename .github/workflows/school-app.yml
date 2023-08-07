@@ -14,25 +14,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Build the Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: Dockerfile
-        push: false
-        tags: ${{ secrets.ECR_REGISTRY }}/school-app:${{ github.run_number }}
+    #- name: Build the Docker image
+    #  uses: docker/build-push-action@v2
+    #  with:
+    #    context: .
+    #    file: Dockerfile
+    #    push: false
+    #    tags: ${{ secrets.ECR_REGISTRY }}/school-app:${{ github.run_number }}
         
     - name: List Docker images
       run: docker image ls
     
-    - name: Login to AWS ECR
-      uses: aws-actions/amazon-ecr-login@v1
+    - name: 'Get Login to AWS ECR'
+      id: ecr-login
+      uses: thalesvon/ecr-login@master
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_DEFAULT_OUTPUT: json
+        AWS_REGION: us-east-1
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       with:
-        registry: ${{ secrets.ECR_REGISTRY }}
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        args: 'get-login --no-include-email --region ${AWS_REGION}'
+
+    - name: 'Docker Login'
+      run: ${{ steps. ecr-login.outputs.login-string }}
     
-    - name: Push Docker image to ECR
-      run: docker push ${{ secrets.ECR_REGISTRY }}/school-app:${{ github.run_number }}
-  
+    #- name: Push Docker image to ECR
+    #  run: docker push ${{ secrets.ECR_REGISTRY }}/my-image:latest
