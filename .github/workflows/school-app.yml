@@ -51,9 +51,8 @@ jobs:
       - name: Deployment
         uses: Pablommr/kubernetes-eks@v1.2.0
         env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          KUBECONFIG: ${{ env.KUBECONFIG }}
           KUBE_YAML: kubernetes/school-app.yml
 
-      - name: Service
-        uses: Pablommr/kubernetes-eks@v1.2.0
-        env:
-          KUBE_YAML: kubernetes/school-app-service.yml
